@@ -1,0 +1,66 @@
+<form class='form-horizontal' action='submit.php'><fieldset>
+<legend>Create a new user</legend>
+<div class="control-group">
+<label class="control-label" for="name">Name</label>
+<div class="controls">
+<input type="text" id="name" name="name" placeholder="">
+</div>
+</div>
+<div class="control-group">
+<label class="control-label" for="item_description">Item Description</label>
+<div class="controls">
+<input type="text" id="item_description" name="item_description" placeholder="">
+</div>
+</div>
+<div class="control-group">
+<label class="control-label" for="email">Email</label>
+<div class="controls">
+<input type="text" id="email" name="email" placeholder="Your email">
+</div>
+</div>
+<div class="control-group">
+<div class="controls">
+<label class="checkbox">
+<input type="checkbox" name='is_banned' checked> Is banned?
+</label>
+</div>
+</div>
+<div class="control-group">
+<label class="control-label" for="sub_starts_on">Sub Starts On</label>
+<div class="controls">
+<input type="datetime" id="sub_starts_on" name="sub_starts_on">
+</div>
+</div>
+<div class="control-group">
+<label class="control-label" for="time_start">Time Start</label>
+<div class="controls">
+<input type="time" id="time_start" name="time_start">
+</div>
+</div>
+<div class="control-group">
+<label class="control-label" for="web_url_homepage">Web Url Homepage</label>
+<div class="controls">
+<input type="url" id="web_url_homepage" name="web_url_homepage" placeholder="">
+</div>
+</div>
+<div class="control-group">
+<label class="control-label" for="blah">Blah</label>
+<div class="controls">
+<textarea id="blah" name="blah" placeholder=""></textarea>
+</div>
+</div>
+<div class="control-group">
+<label class="control-label">User Type</label>
+<div class="controls">
+<select name='user_type'>
+<option value='mother'>Mother</option>
+<option value='maiden'>Maiden</option>
+<option value='crone'>Crone</option>
+</select>
+</div>
+</div>
+<div>
+<button type="submit">Press this!</button>
+</div>
+</fieldset>
+</form>
