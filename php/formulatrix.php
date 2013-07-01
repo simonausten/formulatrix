@@ -103,11 +103,11 @@ class FX {
 		
 		$field = array();
 		
-		if ($this -> gettype($_field) == "string"){
+		if (gettype($_field) == "string"){
 			
 			# Handle list types
 			$_field = str_replace(' ', '', $_field);
-			$listtest = preg_match_all("([A-Za-z0-9_]*)\(([A-Za-z0-9_\,]*)\)", $_field);
+			$listtest = preg_match_all("/([A-Za-z0-9_]*)\(([A-Za-z0-9_\,]*)\)/", $_field);
 			
 			if ($listtest){
 				$_field = array('name' => $listtest[0][0], 'options' => $listtest[0][1].split(','));
@@ -117,7 +117,7 @@ class FX {
 				$field['placeholder'] = '';
 			}
 		}
-		if ($this -> gettype($_field) == "array" and !isset($_field['itype'])) {
+		if (gettype($_field) == "array" and !isset($_field['itype'])) {
 			
 			if (!isset($_field['name'])) {
 				throw new Exception("'name' not found in $_field dictionary");
@@ -136,7 +136,7 @@ class FX {
 		
 		}
 		
-		if (preg_match('[^A-Za-z0-9_]', $name)) {
+		if (preg_match_all('/[^A-Za-z0-9_]/', $name)) {
 			throw new Exception("'name' must only have numbers, letters, underscores and brackets (see docs)");
 		}
 			
@@ -148,14 +148,14 @@ class FX {
 		$field['note'] = (isset($_field['note'])) ? $_field['note'] : '';
 		
 		$this -> fields[] = $field;
-		
+		print_r($field);
 	}
 		
 	public function getType($name) {
 		
 		foreach ($this -> keywords as $keyword){
 			
-			if (preg_match(sprintf('^%s$|_%s|%s_', $keyword, $keyword, $keyword), $name)) {
+			if (preg_match_all(sprintf('/^%s$|_%s|%s_/', $keyword, $keyword, $keyword), $name)) {
 				return $this -> keywords[$keyword];
 			}
 		
