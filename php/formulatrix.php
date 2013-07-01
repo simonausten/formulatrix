@@ -38,30 +38,30 @@ class FX {
 		$this -> action = (isset($kwargs['fields'])) ? $kwargs['fields'] : array();
 		
 		
-		$this -> _keywordmap =array(array('checkbox' => array('is', 'has', 'opt'),
-									array('color' => array('color','colour')),
-									array('date' => array('date')),
-									array('datetime' => array('start','starts','end','ends')),
-									array('email' => array('email')),
-									array('file' => array('file')),
-									array('hidden' => array('key','secret')),
-									array('image' => array('pic','image','img')),
-									array('month' => array('month')),
-									array('number' => array('num','number','id')),
-									array('password' => array('password')),
-									array('select' => array('type', 'country', 'state', 'county')),
-									array('range' => array('range')),
-									array('radio' => array('or', 'sex', 'gender')),
-									array('search' => array('search','term','query')),
-									array('tel' => array('tel','phone')),
-									array('time' => array('time')),
-									array('url' => array('url','link')),
-									array('week' => array('week')),
-									array('textarea' => array('note','description'))));
+		$this -> _keywordmap =array('checkbox' => array('is', 'has', 'opt'),
+									'color' => array('color','colour'),
+									'date' => array('date'),
+									'datetime' => array('start','starts','end','ends'),
+									'email' => array('email'),
+									'file' => array('file'),
+									'hidden' => array('key','secret'),
+									'image' => array('pic','image','img'),
+									'month' => array('month'),
+									'number' => array('num','number','id'),
+									'password' => array('password'),
+									'select' => array('type', 'country', 'state', 'county'),
+									'range' => array('range'),
+									'radio' => array('or', 'sex', 'gender'),
+									'search' => array('search','term','query'),
+									'tel' => array('tel','phone'),
+									'time' => array('time'),
+									'url' => array('url','link'),
+									'week' => array('week'),
+									'textarea' => array('note','description'));
 									
 		$this -> keywords = array();
-		foreach ($this -> _keywordmap as $itype) {
-			foreach ($this -> _keywordmap[$itype] as $keyword){
+		foreach ($this -> _keywordmap as $itype => $keywords) {
+			foreach ($keywords as $keyword){
 				$this -> keywords[$keyword] = $itype;
 			}
 		}
@@ -103,19 +103,20 @@ class FX {
 		
 		$field = array();
 		
-		if ($this -> gettype($_field) == "string"):
+		if ($this -> gettype($_field) == "string"){
 			
 			# Handle list types
 			$_field = str_replace(' ', '', $_field);
 			$listtest = preg_match_all("([A-Za-z0-9_]*)\(([A-Za-z0-9_\,]*)\)", $_field);
 			
-			if ($listtest):
+			if ($listtest){
 				$_field = array('name' => $listtest[0][0], 'options' => $listtest[0][1].split(','));
-			else:
+			} else {
 				$field['itype'] = $this -> getType($_field);
 				$name = $_field;
 				$field['placeholder'] = '';
-		
+			}
+		}
 		if ($this -> gettype($_field) == "array" and !isset($_field['itype'])) {
 			
 			if (!isset($_field['name'])) {
@@ -140,7 +141,8 @@ class FX {
 		}
 			
 		
-		$field['name'] = $id = $name;
+		$field['name'] = $name;
+		$id = $name;
 		$field['itype'] = $this -> getType($name);
 		$field['label'] = $this -> titlecase(implode(" ", explode("_", $name)));		
 		$field['note'] = (isset($_field['note'])) ? $_field['note'] : '';
@@ -151,144 +153,147 @@ class FX {
 		
 	public function getType($name) {
 		
-		foreach ($this -> keywords as $keyword):
+		foreach ($this -> keywords as $keyword){
 			
-			if (preg_match(sprintf('^%s$|_%s|%s_', $keyword, $keyword, $keyword), $subject)):
-				return $this -> keywords[keyword];
+			if (preg_match(sprintf('^%s$|_%s|%s_', $keyword, $keyword, $keyword), $name)) {
+				return $this -> keywords[$keyword];
+			}
+		
+		}
 
-		return 'text'
+		return 'text';
 	
 	}
 		
-	public function getForm(self) {
+	public function getForm() {
 		
-		form = []
+		$form = array();
 		
-		form.append($this -> getFormOpenTag())
+		$form[] = $this -> getFormOpenTag();
 		
-		if $this -> legend:form.append($this -> getLegendTag())
+		if ($this -> legend) {
+			$form[] = $this -> getLegendTag();	
+		}
 		
-		for field in $this -> fields:
+		foreach ($this -> $fields as $field){
 			
-			#print field
-			
-			form.append($this -> getOpenTag(field))
+			$form[] = $this -> getOpenTag($field);
 			
 			#if $this -> labels:
-			form.append($this -> getLabel(field))
-			form.append($this -> getInput(field))
+			$form[] = $this -> getLabel($field);
+			$form[] = $this -> getInput($field);
 			
-			form.append($this -> getCloseTag(field))
+			$form[] = $this -> getCloseTag($field);
+		}			
 		
-		form.append($this -> getSubmit())
-		form.append($this -> getFormCloseTag())
+		$form[] = $this -> getSubmit();
+		$form[] = $this -> getFormCloseTag();
 		
 		
-		return "\n".join(form)
+		return implode('\n', $form);
 		
 	}
 			
-	public function getLabel(field) {
-		return $this -> styles[$this -> style]['label'] % field
-	}
-	
-	public function getInput(field) {
-		
-		if field['itype'] == 'checkbox':
-			return $this -> getCheckboxInput(field)
-		elif field['itype'] == 'radio':
-			return $this -> getRadioInput(field)
-		elif field['itype'] == 'select':
-			return $this -> getSelectInput(field)
-		elif field['itype'] == 'textarea':
-			return $this -> getTextArea(field)
-		else:
-			return $this -> getpublic functionaultInput(field)
-			
-	}
-			
-	public function getpublic functionaultInput(field) {
-		return $this -> styles[$this -> style]['text'] % field
+	public function getLabel($field) {
+		return sprintf($this -> styles[$this -> style]['label'], $field);
 	}
 	
-	public function getTextArea(field) {
-		return $this -> styles[$this -> style]['textarea'] % field
+	public function getInput($field) {
+		
+		if ($field['itype'] == 'checkbox') {
+			return $this -> getCheckboxInput($field);
+		} else if ($field['itype'] == 'radio') {
+			return $this -> getRadioInput($field);
+		} else if ($field['itype'] == 'select') {
+			return $this -> getSelectInput($field);
+		} else if ($field['itype'] == 'textarea') {
+			return $this -> getTextArea($field);
+		} else {
+			return $this -> getDefaultInput($field);
+		}
+			
+	}
+			
+	public function getDefaultInput($field) {
+		return sprintf($this -> styles[$this -> style]['text'], $field);
+	}
+	
+	public function getTextArea($field) {
+		return sprintf($this -> styles[$this -> style]['textarea'], $field);
 	}
 
-	public function getCheckboxInput(field) {
+	public function getCheckboxInput($field) {
 		
-		if $this -> style == 'form-divs':
-			return '<input type="checkbox" name="%(name)s" id="%(name)s" %(checked)s /> %(note)s' % field
+		if ($this -> style == 'form-divs') {
+			return sprintf('<input type="checkbox" name="%(name)s" id="%(name)s" %(checked)s /> %(note)s', $field);
+		}
 			
 	}
 		
-	public function getRadioInput(field) {
+	public function getRadioInput($field) {
 		
-		if len(field['options'])<2: raise ValueError("Radio input must have two or more options")
+		if (count($field['options'])<2) {
+			throw new Exception("Radio input must have two or more options");
+		}
 		
-		radio = ""
-		for o in field['options']:
-			if $this -> style == 'form-divs':
-				radio += '<input type="radio" name="%s" value="%s"> %s' % (field['name'], o, titlecase(o))
+		$radio = "";
+		foreach ($field['options'] as $o) {
+			if ($this -> style == 'form-divs') {
+				$radio .= sprintf('<input type="radio" name="%s" value="%s"> %s', $field['name'], $o, titlecase($o));
+			}
+		}
 			
-		return radio
+		return $radio;
 	
 	}
 		
-	public function getSelectInput(field) {
+	public function getSelectInput($field) {
 		
-		if not field.has_key('options'): raise KeyError("Select must have 'option' list")
-		field['multiple'] = field['multiple'] if field.has_key('multiple') else '' 
+		if (!isset($field['options'])){
+			throw new Exception("Select must have 'option' list");
+		} 
+		$field['multiple'] = (isset($field['multiple'])) ? $field['multiple'] : '' ;
 		
-		select = '<select name="%(name)s" %(multiple)s>' % field
-		for o in field['options']:
-			if $this -> style == 'form-divs':
-				select += '<option value="%s">%s</option>' % (o, titlecase(o))
-		select += "</select>"
+		$select = sprintf('<select name="%(name)s" %(multiple)s>' , $field);
+		foreach ($field['options'] as $o) {
+			if ($this -> style == 'form-divs') {
+				$select .= sprintf('<option value="%s">%s</option>', $o, titlecase($o));
+			}
+		}
+		$select .= "</select>";
 		
-		return select
+		return $select;
 	
 	}
 	
-	public function getOpenTag(field) {
-		return $this -> styles[$this -> style]['open'] % field
+	public function getOpenTag($field) {
+		return sprintf($this -> styles[$this -> style]['open'] , $field);
 	}
 	
-	public function getCloseTag(field) {
-		return $this -> styles[$this -> style]['close']
+	public function getCloseTag($field) {
+		return $this -> styles[$this -> style]['close'];
 	}
 		
-	public function getFormOpenTag(self) {
-		return $this -> styles[$this -> style]['formopen'] % ($this -> style, $this -> action)
+	public function getFormOpenTag() {
+		return sprintf($this -> styles[$this -> style]['formopen'], $this -> style, $this -> action);
 	}
 	
-	public function getFormCloseTag(self) {
-		return "</fieldset></form>"
+	public function getFormCloseTag() {
+		return "</fieldset></form>";
 	}
 	
-	public function getLegendTag(self) {
-		return "<legend>%s</legend>" % $this -> legend
+	public function getLegendTag() {
+		return sprintf("<legend>%s</legend>", $this -> legend);
 	}
 	
-	public function getSubmit(self) {
-		return $this -> styles[$this -> style]['submit'] % $this -> submit
+	public function getSubmit() {
+		return sprintf($this -> styles[$this -> style]['submit'], $this -> submit);
 	}
 	
-	public function clear(self) {
-		fields = array();
+	public function clear() {
+		$this -> fields = array();
 	}
 }
 
-if __name__ == '__main__':
-	form = FX(action = 'create.php', style = 'bootstrap-horizontal', legend = 'Create a new user', submit='Press this!')
-	form.setFields('name', 'item_description',
-        {'name':'email', 'placeholder':'Your email'},
-        {'name':'is_banned', 'checked':True, 'note':'Check this'},
-        'sub_starts_on',
-        'time_start',
-        'web_url_homepage',
-        {'name':'blah', 'type':'textarea'},
-        {'name':'user_type', 'options':['mother','maiden','crone']})
-	print form.getForm()
 	
 ?>
