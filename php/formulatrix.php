@@ -94,7 +94,7 @@ class FX {
 		$fields = func_get_args();
 		
 		foreach ($fields as $f){
-			$this -> addField(f);
+			$this -> addField($f);
 		}
 		
 	}
@@ -116,13 +116,14 @@ class FX {
 				$name = $_field;
 				$field['placeholder'] = '';
 		
-		if ($this -> gettype($_field) == "array" and !isset($_field['itype'])):
+		if ($this -> gettype($_field) == "array" and !isset($_field['itype'])) {
 			
-			if (!isset($_field['name'])):
+			if (!isset($_field['name'])) {
 				throw new Exception("'name' not found in $_field dictionary");
-			else:
+			} else {
 				$name = $_field['name'];
-				$field['itype'] = $this -> getType(name);
+				$field['itype'] = $this -> getType($name);
+			}
 			
 			$field['placeholder'] = (isset($_field['placeholder'])) ? $_field['placeholder'] : '';
 			$field['value'] = (isset($_field['value'])) ? $_field['value'] : '';
@@ -132,8 +133,11 @@ class FX {
 								  ? 'checked' : '';
 			$field['options'] = (isset($_field['options'])) ? $_field['options'] : array();
 		
-		if (preg_match('[^A-Za-z0-9_]', $name)) :
+		}
+		
+		if (preg_match('[^A-Za-z0-9_]', $name)) {
 			throw new Exception("'name' must only have numbers, letters, underscores and brackets (see docs)");
+		}
 			
 		
 		$field['name'] = $id = $name;
