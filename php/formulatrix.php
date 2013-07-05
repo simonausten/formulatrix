@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL);
 
 class FX {
 
@@ -103,27 +104,28 @@ class FX {
 		
 		$field = array();
 		
-		if ($this -> gettype($_field) == "string"):
+		if ($this -> gettype($_field) == "string"){
 			
 			# Handle list types
 			$_field = str_replace(' ', '', $_field);
 			$listtest = preg_match_all("([A-Za-z0-9_]*)\(([A-Za-z0-9_\,]*)\)", $_field);
 			
-			if ($listtest):
+			if ($listtest){
 				$_field = array('name' => $listtest[0][0], 'options' => $listtest[0][1].split(','));
-			else:
+			} else {
 				$field['itype'] = $this -> getType($_field);
 				$name = $_field;
 				$field['placeholder'] = '';
-		
-		if ($this -> gettype($_field) == "array" and !isset($_field['itype'])):
+			}
+		}
+		if ($this -> gettype($_field) == "array" and !isset($_field['itype'])){
 			
-			if (!isset($_field['name'])):
+			if (!isset($_field['name'])){
 				throw new Exception("'name' not found in $_field dictionary");
-			else:
+			} else {
 				$name = $_field['name'];
 				$field['itype'] = $this -> getType(name);
-			
+			}
 			$field['placeholder'] = (isset($_field['placeholder'])) ? $_field['placeholder'] : '';
 			$field['value'] = (isset($_field['value'])) ? $_field['value'] : '';
 			$field['multiple'] = (isset($_field['multiple']) and $_field['multiple'] == TRUE)
@@ -131,14 +133,14 @@ class FX {
 			$field['checked'] =  (isset($_field['checked']) and $_field['checked'] == TRUE)
 								  ? 'checked' : '';
 			$field['options'] = (isset($_field['options'])) ? $_field['options'] : array();
-		
-		if (preg_match('[^A-Za-z0-9_]', $name)) :
+		}
+		if (preg_match('[^A-Za-z0-9_]', $name)) {
 			throw new Exception("'name' must only have numbers, letters, underscores and brackets (see docs)");
-			
+		}
 		
-		$field['name'] = $id = $name;
+		$field['name'] = $name; 
 		$field['itype'] = $this -> getType($name);
-		$field['label'] = $this -> titlecase(implode(" ", explode("_", $name)));		
+		$field['label'] = $this -> titlecase(implode(" ", explode("_", $name)));	
 		$field['note'] = (isset($_field['note'])) ? $_field['note'] : '';
 		
 		$this -> fields[] = $field;
@@ -147,40 +149,43 @@ class FX {
 		
 	public function getType($name) {
 		
-		foreach ($this -> keywords as $keyword):
-			
-			if (preg_match(sprintf('^%s$|_%s|%s_', $keyword, $keyword, $keyword), $subject)):
+		foreach ($this -> keywords as $keyword){			
+			if (preg_match(sprintf('^%s$|_%s|%s_', $keyword, $keyword, $keyword), $subject)){
 				return $this -> keywords[keyword];
-
-		return 'text'
+			}
+		}
+		
+		return 'text';
 	
 	}
 		
-	public function getForm(self) {
+	public function getForm() {
 		
-		form = []
+		$form = array();
 		
-		form.append($this -> getFormOpenTag())
+		$form[] = $this -> getFormOpenTag();
 		
-		if $this -> legend:form.append($this -> getLegendTag())
-		
-		for field in $this -> fields:
+		if ($this -> legend) {
+			$form.append($this -> getLegendTag());
+		}
 			
-			#print field
+		
+		foreach ($this -> fields as $field){
 			
-			form.append($this -> getOpenTag(field))
+			$form[] = $this -> getOpenTag(field);
 			
 			#if $this -> labels:
-			form.append($this -> getLabel(field))
-			form.append($this -> getInput(field))
+			$form[] = $this -> getLabel(field);
+			$form[] = $this -> getInput(field);
 			
-			form.append($this -> getCloseTag(field))
+			$form[] = $this -> getCloseTag(field);
+		}
 		
-		form.append($this -> getSubmit())
-		form.append($this -> getFormCloseTag())
+		$form[] = $this -> getSubmit();
+		$form[] = $this -> getFormCloseTag();
 		
 		
-		return "\n".join(form)
+		return implode("\n", $form);
 		
 	}
 			
