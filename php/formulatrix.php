@@ -172,13 +172,13 @@ class FX {
 		
 		foreach ($this -> fields as $field){
 			
-			$form[] = $this -> getOpenTag(field);
+			$form[] = $this -> getOpenTag($field);
 			
 			#if $this -> labels:
-			$form[] = $this -> getLabel(field);
-			$form[] = $this -> getInput(field);
+			$form[] = $this -> getLabel($field);
+			$form[] = $this -> getInput($field);
 			
-			$form[] = $this -> getCloseTag(field);
+			$form[] = $this -> getCloseTag($field);
 		}
 		
 		$form[] = $this -> getSubmit();
@@ -189,41 +189,52 @@ class FX {
 		
 	}
 			
-	public function getLabel(field) {
-		return $this -> styles[$this -> style]['label'] % field
+	public function getLabel($field) {
+		return sprintf($this -> styles[$this -> style]['label'], $field);
 	}
 	
-	public function getInput(field) {
+	public function getInput($field) {
 		
-		if field['itype'] == 'checkbox':
-			return $this -> getCheckboxInput(field)
-		elif field['itype'] == 'radio':
-			return $this -> getRadioInput(field)
-		elif field['itype'] == 'select':
-			return $this -> getSelectInput(field)
-		elif field['itype'] == 'textarea':
-			return $this -> getTextArea(field)
-		else:
-			return $this -> getpublic functionaultInput(field)
-			
+		switch ($field['itype']){
+			case'checkbox':
+				return $this -> getCheckboxInput($field);
+				break;
+			case 'radio':
+				return $this -> getRadioInput($field);
+				break;
+			case 'select':
+				return $this -> getSelectInput($field);
+				break;
+			case 'textarea':
+				return $this -> getTextArea($field);
+				break;
+			default:
+				return $this -> getDefaultInput($field);
+				break;
+		}
 	}
 			
-	public function getpublic functionaultInput(field) {
-		return $this -> styles[$this -> style]['text'] % field
+	public function getDefaultInput($field) {
+		return sprintf($this -> styles[$this -> style]['text'], $field);
 	}
 	
-	public function getTextArea(field) {
-		return $this -> styles[$this -> style]['textarea'] % field
+	public function getTextArea($field) {
+		return sprintf($this -> styles[$this -> style]['textarea'], $field);
 	}
 
-	public function getCheckboxInput(field) {
+	public function getCheckboxInput($field) {
 		
-		if $this -> style == 'form-divs':
-			return '<input type="checkbox" name="%(name)s" id="%(name)s" %(checked)s /> %(note)s' % field
-			
+		if ($this -> style == 'form-divs'){
+			return sprintf('<input type="checkbox" name="%s" id="%s" %s /> %s',
+							$field -> name,
+							$field -> id,
+							$field -> checked,
+							$field -> note);
+		}
+					
 	}
 		
-	public function getRadioInput(field) {
+	public function getRadioInput($field) {
 		
 		if len(field['options'])<2: raise ValueError("Radio input must have two or more options")
 		
@@ -236,12 +247,12 @@ class FX {
 	
 	}
 		
-	public function getSelectInput(field) {
+	public function getSelectInput($field) {
 		
 		if not field.has_key('options'): raise KeyError("Select must have 'option' list")
 		field['multiple'] = field['multiple'] if field.has_key('multiple') else '' 
 		
-		select = '<select name="%(name)s" %(multiple)s>' % field
+		select = '<select name="%(name)s" %(multiple)s>', $field)
 		for o in field['options']:
 			if $this -> style == 'form-divs':
 				select += '<option value="%s">%s</option>' % (o, titlecase(o))
@@ -251,16 +262,16 @@ class FX {
 	
 	}
 	
-	public function getOpenTag(field) {
-		return $this -> styles[$this -> style]['open'] % field
+	public function getOpenTag($field) {
+		return sprintf($this -> styles[$this -> style]['open'], $field);
 	}
 	
-	public function getCloseTag(field) {
-		return $this -> styles[$this -> style]['close']
+	public function getCloseTag($field) {
+		return $this -> styles[$this -> style]['close'];
 	}
 		
 	public function getFormOpenTag(self) {
-		return $this -> styles[$this -> style]['formopen'] % ($this -> style, $this -> action)
+		return sprintf($this -> styles[$this -> style]['formopen'] % ($this -> style, $this -> action);
 	}
 	
 	public function getFormCloseTag(self) {
@@ -268,11 +279,11 @@ class FX {
 	}
 	
 	public function getLegendTag(self) {
-		return "<legend>%s</legend>" % $this -> legend
+		return sprintf("<legend>%s</legend>" % $this -> legend
 	}
 	
 	public function getSubmit(self) {
-		return $this -> styles[$this -> style]['submit'] % $this -> submit
+		return sprintf($this -> styles[$this -> style]['submit'] % $this -> submit
 	}
 	
 	public function clear(self) {
