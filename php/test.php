@@ -1,11 +1,12 @@
 <?php
 
+error_reporting(E_ALL);
+
 require('formulatrix.php');
 
 $FX = new FX();
-$FX -> setFields('name');
-die('asxas');
-print_r($FX);
+$form = $FX -> getForm();
+echo $form;
 
 // if __name__ == '__main__':
 	// form = FX(action = 'create.php', style = 'bootstrap-horizontal', legend = 'Create a new user', submit='Press this!')

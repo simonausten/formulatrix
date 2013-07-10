@@ -32,10 +32,10 @@ class FX {
 		$kwargs = func_get_args();
 		
 		$this -> action = (isset($kwargs['action'])) ? $kwargs['action'] : '';
-		$this -> action = (isset($kwargs['style'])) ? $kwargs['style'] : 'form-divs';
-		$this -> action = (isset($kwargs['legend'])) ? $kwargs['legend'] : '';
-		$this -> action = (isset($kwargs['submit'])) ? $kwargs['submit'] : 'Submit';
-		$this -> action = (isset($kwargs['fields'])) ? $kwargs['fields'] : array();
+		$this -> style = (isset($kwargs['style'])) ? $kwargs['style'] : 'form-divs';
+		$this -> legend = (isset($kwargs['legend'])) ? $kwargs['legend'] : '';
+		$this -> submit = (isset($kwargs['submit'])) ? $kwargs['submit'] : 'Submit';
+		$this -> fields = (isset($kwargs['fields'])) ? $kwargs['fields'] : array();
 		
 		
 		$this -> _keywordmap =array('checkbox' => array('is', 'has', 'opt'),
@@ -148,7 +148,6 @@ class FX {
 		$field['note'] = (isset($_field['note'])) ? $_field['note'] : '';
 		
 		$this -> fields[] = $field;
-		print_r($field);
 	}
 		
 	public function getType($name) {
@@ -166,6 +165,10 @@ class FX {
 	}
 		
 	public function getForm() {
+		
+		print_r($this->style);
+		die();
+		
 		
 		$form = array();
 		
@@ -275,6 +278,7 @@ class FX {
 	}
 		
 	public function getFormOpenTag() {
+		
 		return sprintf($this -> styles[$this -> style]['formopen'], $this -> style, $this -> action);
 	}
 	
