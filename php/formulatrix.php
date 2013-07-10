@@ -236,29 +236,39 @@ class FX {
 		
 	public function getRadioInput($field) {
 		
-		if len(field['options'])<2: raise ValueError("Radio input must have two or more options")
+		if (count($field['options'])<2) {
+			throw new Exception("Radio input must have two or more options");	
+		}	
+				
+		$radio = "";
 		
-		radio = ""
-		for o in field['options']:
-			if $this -> style == 'form-divs':
-				radio += '<input type="radio" name="%s" value="%s"> %s' % (field['name'], o, titlecase(o))
-			
-		return radio
+		foreach ($field['options'] as $o){
+			if ($this -> style == 'form-divs'){
+				$radio .= sprintf('<input type="radio" name="%s" value="%s"> %s', $field['name'], $o, titlecase($o));
+			}
+		}
+		return $radio;
 	
 	}
 		
 	public function getSelectInput($field) {
 		
-		if not field.has_key('options'): raise KeyError("Select must have 'option' list")
-		field['multiple'] = field['multiple'] if field.has_key('multiple') else '' 
+		if (!isset($field['options'])) {
+			throw new Exception("Select must have 'option' list");	
+		}
 		
-		select = '<select name="%(name)s" %(multiple)s>', $field)
-		for o in field['options']:
-			if $this -> style == 'form-divs':
-				select += '<option value="%s">%s</option>' % (o, titlecase(o))
-		select += "</select>"
+		$field['multiple'] = isset($field['multiple']) ? $field['multiple'] : ''; 
 		
-		return select
+		$select = sprintf('<select name="%s" %s>', $field['name'], $field['multiple']);
+		foreach($field['options'] as $o) {
+			if ($this -> style == 'form-divs'){
+				$select .= sprintf('<option value="%s">%s</option>', $o, titlecase($o));
+			}	
+		}
+			
+		$select .= "</select>";
+		
+		return $select;
 	
 	}
 	
@@ -270,37 +280,25 @@ class FX {
 		return $this -> styles[$this -> style]['close'];
 	}
 		
-	public function getFormOpenTag(self) {
-		return sprintf($this -> styles[$this -> style]['formopen'] % ($this -> style, $this -> action);
+	public function getFormOpenTag() {
+		return sprintf($this -> styles[$this -> style]['formopen'], $this -> style, $this -> action);
 	}
 	
-	public function getFormCloseTag(self) {
-		return "</fieldset></form>"
+	public function getFormCloseTag() {
+		return "</fieldset></form>";
 	}
 	
-	public function getLegendTag(self) {
-		return sprintf("<legend>%s</legend>" % $this -> legend
+	public function getLegendTag() {
+		return sprintf("<legend>%s</legend>", $this -> legend);
 	}
 	
-	public function getSubmit(self) {
-		return sprintf($this -> styles[$this -> style]['submit'] % $this -> submit
+	public function getSubmit() {
+		return sprintf($this -> styles[$this -> style]['submit'], $this -> submit);
 	}
 	
-	public function clear(self) {
-		fields = array();
+	public function clear() {
+		$fields = array();
 	}
 }
-
-if __name__ == '__main__':
-	form = FX(action = 'create.php', style = 'bootstrap-horizontal', legend = 'Create a new user', submit='Press this!')
-	form.setFields('name', 'item_description',
-        {'name':'email', 'placeholder':'Your email'},
-        {'name':'is_banned', 'checked':True, 'note':'Check this'},
-        'sub_starts_on',
-        'time_start',
-        'web_url_homepage',
-        {'name':'blah', 'type':'textarea'},
-        {'name':'user_type', 'options':['mother','maiden','crone']})
-	print form.getForm()
 	
 ?>
