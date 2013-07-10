@@ -1,5 +1,4 @@
 <?php
-error_reporting(E_ALL);
 
 class FX {
 
@@ -39,30 +38,30 @@ class FX {
 		$this -> action = (isset($kwargs['fields'])) ? $kwargs['fields'] : array();
 		
 		
-		$this -> _keywordmap =array(array('checkbox' => array('is', 'has', 'opt'),
-									array('color' => array('color','colour')),
-									array('date' => array('date')),
-									array('datetime' => array('start','starts','end','ends')),
-									array('email' => array('email')),
-									array('file' => array('file')),
-									array('hidden' => array('key','secret')),
-									array('image' => array('pic','image','img')),
-									array('month' => array('month')),
-									array('number' => array('num','number','id')),
-									array('password' => array('password')),
-									array('select' => array('type', 'country', 'state', 'county')),
-									array('range' => array('range')),
-									array('radio' => array('or', 'sex', 'gender')),
-									array('search' => array('search','term','query')),
-									array('tel' => array('tel','phone')),
-									array('time' => array('time')),
-									array('url' => array('url','link')),
-									array('week' => array('week')),
-									array('textarea' => array('note','description'))));
+		$this -> _keywordmap =array('checkbox' => array('is', 'has', 'opt'),
+									'color' => array('color','colour'),
+									'date' => array('date'),
+									'datetime' => array('start','starts','end','ends'),
+									'email' => array('email'),
+									'file' => array('file'),
+									'hidden' => array('key','secret'),
+									'image' => array('pic','image','img'),
+									'month' => array('month'),
+									'number' => array('num','number','id'),
+									'password' => array('password'),
+									'select' => array('type', 'country', 'state', 'county'),
+									'range' => array('range'),
+									'radio' => array('or', 'sex', 'gender'),
+									'search' => array('search','term','query'),
+									'tel' => array('tel','phone'),
+									'time' => array('time'),
+									'url' => array('url','link'),
+									'week' => array('week'),
+									'textarea' => array('note','description'));
 									
 		$this -> keywords = array();
-		foreach ($this -> _keywordmap as $itype) {
-			foreach ($this -> _keywordmap[$itype] as $keyword){
+		foreach ($this -> _keywordmap as $itype => $keywords) {
+			foreach ($keywords as $keyword){
 				$this -> keywords[$keyword] = $itype;
 			}
 		}
@@ -95,7 +94,7 @@ class FX {
 		$fields = func_get_args();
 		
 		foreach ($fields as $f){
-			$this -> addField(f);
+			$this -> addField($f);
 		}
 		
 	}
@@ -104,11 +103,11 @@ class FX {
 		
 		$field = array();
 		
-		if ($this -> gettype($_field) == "string"){
+		if (gettype($_field) == "string"){
 			
 			# Handle list types
 			$_field = str_replace(' ', '', $_field);
-			$listtest = preg_match_all("([A-Za-z0-9_]*)\(([A-Za-z0-9_\,]*)\)", $_field);
+			$listtest = preg_match_all("/([A-Za-z0-9_]*)\(([A-Za-z0-9_\,]*)\)/", $_field);
 			
 			if ($listtest){
 				$_field = array('name' => $listtest[0][0], 'options' => $listtest[0][1].split(','));
@@ -118,14 +117,15 @@ class FX {
 				$field['placeholder'] = '';
 			}
 		}
-		if ($this -> gettype($_field) == "array" and !isset($_field['itype'])){
+		if (gettype($_field) == "array" and !isset($_field['itype'])) {
 			
-			if (!isset($_field['name'])){
+			if (!isset($_field['name'])) {
 				throw new Exception("'name' not found in $_field dictionary");
 			} else {
 				$name = $_field['name'];
-				$field['itype'] = $this -> getType(name);
+				$field['itype'] = $this -> getType($name);
 			}
+			
 			$field['placeholder'] = (isset($_field['placeholder'])) ? $_field['placeholder'] : '';
 			$field['value'] = (isset($_field['value'])) ? $_field['value'] : '';
 			$field['multiple'] = (isset($_field['multiple']) and $_field['multiple'] == TRUE)
@@ -133,28 +133,34 @@ class FX {
 			$field['checked'] =  (isset($_field['checked']) and $_field['checked'] == TRUE)
 								  ? 'checked' : '';
 			$field['options'] = (isset($_field['options'])) ? $_field['options'] : array();
-		}
-		if (preg_match('[^A-Za-z0-9_]', $name)) {
-			throw new Exception("'name' must only have numbers, letters, underscores and brackets (see docs)");
+		
 		}
 		
-		$field['name'] = $name; 
+		if (preg_match_all('/[^A-Za-z0-9_]/', $name)) {
+			throw new Exception("'name' must only have numbers, letters, underscores and brackets (see docs)");
+		}
+			
+		
+		$field['name'] = $name;
+		$id = $name;
 		$field['itype'] = $this -> getType($name);
-		$field['label'] = $this -> titlecase(implode(" ", explode("_", $name)));	
+		$field['label'] = $this -> titlecase(implode(" ", explode("_", $name)));		
 		$field['note'] = (isset($_field['note'])) ? $_field['note'] : '';
 		
 		$this -> fields[] = $field;
-		
+		print_r($field);
 	}
 		
 	public function getType($name) {
 		
-		foreach ($this -> keywords as $keyword){			
-			if (preg_match(sprintf('^%s$|_%s|%s_', $keyword, $keyword, $keyword), $subject)){
-				return $this -> keywords[keyword];
+		foreach ($this -> keywords as $keyword){
+			
+			if (preg_match_all(sprintf('/^%s$|_%s|%s_/', $keyword, $keyword, $keyword), $name)) {
+				return $this -> keywords[$keyword];
 			}
-		}
 		
+		}
+
 		return 'text';
 	
 	}
@@ -166,11 +172,10 @@ class FX {
 		$form[] = $this -> getFormOpenTag();
 		
 		if ($this -> legend) {
-			$form.append($this -> getLegendTag());
+			$form[] = $this -> getLegendTag();	
 		}
-			
 		
-		foreach ($this -> fields as $field){
+		foreach ($this -> $fields as $field){
 			
 			$form[] = $this -> getOpenTag($field);
 			
@@ -179,13 +184,13 @@ class FX {
 			$form[] = $this -> getInput($field);
 			
 			$form[] = $this -> getCloseTag($field);
-		}
+		}			
 		
 		$form[] = $this -> getSubmit();
 		$form[] = $this -> getFormCloseTag();
 		
 		
-		return implode("\n", $form);
+		return implode('\n', $form);
 		
 	}
 			
@@ -195,23 +200,18 @@ class FX {
 	
 	public function getInput($field) {
 		
-		switch ($field['itype']){
-			case'checkbox':
-				return $this -> getCheckboxInput($field);
-				break;
-			case 'radio':
-				return $this -> getRadioInput($field);
-				break;
-			case 'select':
-				return $this -> getSelectInput($field);
-				break;
-			case 'textarea':
-				return $this -> getTextArea($field);
-				break;
-			default:
-				return $this -> getDefaultInput($field);
-				break;
+		if ($field['itype'] == 'checkbox') {
+			return $this -> getCheckboxInput($field);
+		} else if ($field['itype'] == 'radio') {
+			return $this -> getRadioInput($field);
+		} else if ($field['itype'] == 'select') {
+			return $this -> getSelectInput($field);
+		} else if ($field['itype'] == 'textarea') {
+			return $this -> getTextArea($field);
+		} else {
+			return $this -> getDefaultInput($field);
 		}
+			
 	}
 			
 	public function getDefaultInput($field) {
@@ -224,48 +224,42 @@ class FX {
 
 	public function getCheckboxInput($field) {
 		
-		if ($this -> style == 'form-divs'){
-			return sprintf('<input type="checkbox" name="%s" id="%s" %s /> %s',
-							$field -> name,
-							$field -> id,
-							$field -> checked,
-							$field -> note);
+		if ($this -> style == 'form-divs') {
+			return sprintf('<input type="checkbox" name="%(name)s" id="%(name)s" %(checked)s /> %(note)s', $field);
 		}
-					
+			
 	}
 		
 	public function getRadioInput($field) {
 		
 		if (count($field['options'])<2) {
-			throw new Exception("Radio input must have two or more options");	
-		}	
-				
-		$radio = "";
+			throw new Exception("Radio input must have two or more options");
+		}
 		
-		foreach ($field['options'] as $o){
-			if ($this -> style == 'form-divs'){
+		$radio = "";
+		foreach ($field['options'] as $o) {
+			if ($this -> style == 'form-divs') {
 				$radio .= sprintf('<input type="radio" name="%s" value="%s"> %s', $field['name'], $o, titlecase($o));
 			}
 		}
+			
 		return $radio;
 	
 	}
 		
 	public function getSelectInput($field) {
 		
-		if (!isset($field['options'])) {
-			throw new Exception("Select must have 'option' list");	
-		}
+		if (!isset($field['options'])){
+			throw new Exception("Select must have 'option' list");
+		} 
+		$field['multiple'] = (isset($field['multiple'])) ? $field['multiple'] : '' ;
 		
-		$field['multiple'] = isset($field['multiple']) ? $field['multiple'] : ''; 
-		
-		$select = sprintf('<select name="%s" %s>', $field['name'], $field['multiple']);
-		foreach($field['options'] as $o) {
-			if ($this -> style == 'form-divs'){
+		$select = sprintf('<select name="%(name)s" %(multiple)s>' , $field);
+		foreach ($field['options'] as $o) {
+			if ($this -> style == 'form-divs') {
 				$select .= sprintf('<option value="%s">%s</option>', $o, titlecase($o));
-			}	
+			}
 		}
-			
 		$select .= "</select>";
 		
 		return $select;
@@ -273,7 +267,7 @@ class FX {
 	}
 	
 	public function getOpenTag($field) {
-		return sprintf($this -> styles[$this -> style]['open'], $field);
+		return sprintf($this -> styles[$this -> style]['open'] , $field);
 	}
 	
 	public function getCloseTag($field) {
@@ -297,8 +291,9 @@ class FX {
 	}
 	
 	public function clear() {
-		$fields = array();
+		$this -> fields = array();
 	}
 }
+
 	
 ?>

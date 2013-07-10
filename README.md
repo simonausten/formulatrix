@@ -5,7 +5,7 @@ Ultra simple, smart HTML5 form generation in PHP and Python
 
 *Because forms are bad and they need to be disciplined*
 
-Formulatrix (FX for short) lets you generate HTML5 forms in PHP (and Python), by simply supplying the field name of the form. FX takes snake-case (underscore separated) field names, splits them, looks for common substrings, determines what kind of form control would suit them best (text, password, radio, select etc.) and generates a form, with the field names used as names and ids, and correctly titlecased as labels.
+Formulatrix (FX for short) lets you generate HTML5 forms in PHP (and Python), by simply supplying the field names of the form. FX takes snake-case (underscore separated) field names, splits them, looks for common substrings, determines what kind of form control would suit them best (text, password, radio, select etc.) and generates a form, with the field names used as names and ids, and correctly titlecased as labels.
 
 Twitter Bootstrap forms coming soon!
 
