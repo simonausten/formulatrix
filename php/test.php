@@ -1,10 +1,9 @@
 <?php
 
-error_reporting(E_ALL);
-
 require('formulatrix.php');
 
 $FX = new FX();
+$FX -> setFields('name');
 $form = $FX -> getForm();
 echo $form;
 
