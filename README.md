@@ -20,7 +20,9 @@ Usage
     
 *PHP*
 
-    TBC
+    form = new FX(legend='Create a User')
+    form -> addFields('name','date_of_birth','gender','home_country')
+    print form -> getForm()
     
 *Result:*
 
